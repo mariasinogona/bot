@@ -432,6 +432,40 @@ def about_bot(message):
 #декоратор мои данные
 @bot.message_handler(func=lambda m: m.text == "📊 Мои данные")
 def show_stats(message):
+    user_id = message.from_user.id
+    data = user_data.get(user_id, {})
+
+    # Получаем данные (даже если их нет — подставляем значения по умолчанию)
+    interests = data.get('interests', [])
+    subjects = data.get('subjects', [])
+    step = data.get('step', 'не начат')
+    score = data.get('score', 'не указаны')
+    prof_result = data.get('prof_result', [])
+
+    # Красиво оформляем интересы и предметы
+    interests_text = ', '.join(interests) if interests else 'не выбраны'
+    subjects_text = ', '.join(subjects) if subjects else 'не выбраны'
+
+    # Формируем текст
+    text = f"""
+📊 *ТВОИ ДАННЫЕ*
+
+• Этап: {step}
+• Интересы: {interests_text}
+• Предметы: {subjects_text}
+• Баллы ЕГЭ: {score}
+    """
+
+    if prof_result:
+        text += "• Профтест: пройден ✅\n"
+        text += f"  Рекомендовано: {', '.join(prof_result)}\n"
+
+    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=main_menu())
+
+
+
+'''@bot.message_handler(func=lambda m: m.text == "📊 Мои данные")
+def show_stats(message):
     user_id = message.from_user.id #Получаем ID пользователя
     data = user_data.get(user_id, {})
 
@@ -447,7 +481,7 @@ def show_stats(message):
     if data.get("prof_result"):
         text += "• Профтест: пройден ✅\n"
 
-    bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    bot.send_message(message.chat.id, text, parse_mode="Markdown")'''
 
 #декоратор всех других случаев
 @bot.message_handler(func=lambda m: True)
